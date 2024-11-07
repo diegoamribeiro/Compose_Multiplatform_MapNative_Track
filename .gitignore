@@ -2,4 +2,4 @@
 /.gradle/
 /build/
 /shared/build/generated/
-Configurations/Config.xcconfig
+Configuration/Config.xcconfig

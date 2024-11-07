@@ -19,27 +19,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate {
 
   private var services: Any?
 
-//  func application(
-//    _ application: UIApplication,
-//    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-//  ) -> Bool {
-//
-//    GMSServices.provideAPIKey(SDKConstants.apiKey)
-//    // Metal is the preferred renderer.
-//    GMSServices.setMetalRendererEnabled(true)
-//    services = GMSServices.sharedServices()
-//
-//    return true
-//  }
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
 
-  var window: UIWindow?
+    GMSServices.provideAPIKey(SDKConstants.apiKey)
+    // Metal is the preferred renderer.
+    GMSServices.setMetalRendererEnabled(true)
+    services = GMSServices.sharedServices()
 
-      func application(_ application: UIApplication,
-                       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-          GMSServices.provideAPIKey(SDKConstants.apiKey)
-          GMSPlacesClient.provideAPIKey(SDKConstants.apiKey)
-          return true
-      }
+    return true
+  }
 
   func application(
     _ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession,

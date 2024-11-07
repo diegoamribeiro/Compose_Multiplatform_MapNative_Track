@@ -1,6 +1,6 @@
 package com.dmribeiro.cmpmapview.services
 
-import com.dmribeiro.cmpmapview.model.LocationData
+import com.dmribeiro.cmpmapview.model.LocationModel
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.useContents
@@ -34,7 +34,7 @@ class IOSLocationService : LocationService {
         locationManager.requestWhenInUseAuthorization()
     }
 
-    override suspend fun getCurrentLocation(): LocationData? {
+    override suspend fun getCurrentLocation(): LocationModel? {
         return suspendCancellableCoroutine { continuation ->
             delegate.locationContinuation = continuation
             val status = CLLocationManager.authorizationStatus()
@@ -56,7 +56,7 @@ class IOSLocationService : LocationService {
 }
 
 class LocationManagerDelegate : NSObject(), CLLocationManagerDelegateProtocol {
-    var locationContinuation: CancellableContinuation<LocationData?>? = null
+    var locationContinuation: CancellableContinuation<LocationModel?>? = null
 
     @OptIn(ExperimentalForeignApi::class)
     override fun locationManager(manager: CLLocationManager, didUpdateLocations: List<*>) {
@@ -66,7 +66,7 @@ class LocationManagerDelegate : NSObject(), CLLocationManagerDelegateProtocol {
             memScoped {
                 val coordinate = location.coordinate.useContents {
                     println("***Location: $latitude, $longitude")
-                    LocationData(latitude, longitude)
+                    LocationModel(latitude, longitude)
                 }
                 locationContinuation?.resume(coordinate)
             }

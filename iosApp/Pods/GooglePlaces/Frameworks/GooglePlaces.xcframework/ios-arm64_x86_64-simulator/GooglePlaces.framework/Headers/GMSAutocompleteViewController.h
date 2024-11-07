@@ -12,7 +12,6 @@
 
 
 #import "GMSPlaceFieldMask.h"
-#import "GMSPlaceProperty.h"
 
 #import "GMSPlacesDeprecationUtils.h"
 
@@ -145,11 +144,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, assign) GMSPlaceField placeFields;
 
-/**
- * The |GMSPlaceProperty| for specifying explicit place details to be requested. Default returns
- * all available properties.
- */
-@property(nonatomic, strong) NSArray<GMSPlaceProperty> *placeProperties;
 
 @end
 

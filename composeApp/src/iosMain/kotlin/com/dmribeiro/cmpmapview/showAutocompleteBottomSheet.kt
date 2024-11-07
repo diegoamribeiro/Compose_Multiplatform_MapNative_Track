@@ -4,6 +4,7 @@ import cocoapods.GooglePlaces.GMSAutocompleteViewController
 import cocoapods.GooglePlaces.GMSAutocompleteViewControllerDelegateProtocol
 import cocoapods.GooglePlaces.GMSPlace
 import com.dmribeiro.cmpmapview.model.Place
+import io.github.aakira.napier.Napier
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCAction
 import kotlinx.cinterop.useContents

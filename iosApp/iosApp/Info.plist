@@ -49,15 +49,25 @@
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app requires your location to display it on the map.</string>
     <key>MAPS_API_KEY</key>
-    <string>AIzaSyBlEfGQAYuleAW_Vmh1alr56LHTPzak97E</string>
+    <string>$(MAPS_API_KEY)</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Precisamos de sua localização para fornecer melhores serviços.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Precisamos de sua localização para fornecer melhores serviços.</string>
     <key>NSAppTransportSecurity</key>
     <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>maps.googleapis.com</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSTemporaryExceptionMinimumTLSVersion</key>
+                <string>TLSv1.2</string>
+            </dict>
+        </dict>
     </dict>
 </dict>
 </plist>

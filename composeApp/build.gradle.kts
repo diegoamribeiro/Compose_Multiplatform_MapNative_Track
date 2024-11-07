@@ -12,6 +12,15 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+// Carregar a chave de API do local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
+val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
+
 kotlin {
 
     androidTarget {
@@ -55,22 +64,28 @@ kotlin {
 
     sourceSets {
 
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.serialization.json)
-            implementation(libs.ktor.client.logging)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.napier.logger)
-            implementation(libs.kotlinx.coroutines.core)
+        val generatedDir = buildDir.resolve("generated/buildkonfig")
+
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodel)
+                implementation(libs.androidx.lifecycle.runtime.compose)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.serialization.json)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.napier.logger)
+                implementation(libs.kotlinx.coroutines.core)
+            }
         }
+
+        commonMain.kotlin.srcDir(generatedDir)
 
         androidMain.dependencies {
             implementation(compose.preview)
@@ -84,11 +99,36 @@ kotlin {
         }
 
         iosMain.dependencies {
+            implementation(libs.ktor.client.ios)
             implementation(libs.ktor.client.darwin)
             implementation(libs.kotlinx.coroutines.core)
         }
 
     }
+}
+
+tasks.register("generateBuildKonfig") {
+    val outputDir = buildDir.resolve("generated/buildkonfig/com/dmribeiro/cmpmapview")
+    val outputFile = outputDir.resolve("BuildKonfig.kt")
+
+    inputs.property("apiKey", mapsApiKey)
+    outputs.file(outputFile)
+
+    doLast {
+        outputDir.mkdirs()
+        outputFile.writeText("""
+            package com.seu.pacote
+
+            object BuildKonfig {
+                const val MAPS_API_KEY = "$mapsApiKey"
+            }
+        """.trimIndent())
+    }
+}
+
+// Assegurar que a tarefa de geração seja executada antes de compilar
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {
+    dependsOn("generateBuildKonfig")
 }
 
 android {

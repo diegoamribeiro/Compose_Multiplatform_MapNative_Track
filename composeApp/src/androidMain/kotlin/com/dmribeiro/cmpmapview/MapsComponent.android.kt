@@ -30,6 +30,7 @@ actual fun MapsComponent(
     )
     var selectedMapType by remember { mutableIntStateOf(0) } // Default to Normal map type
 
+
     // Map properties and UI settings
     val mapProperties = remember {
         mutableStateOf(
@@ -86,7 +87,7 @@ actual fun MapsComponent(
                     points = routePolylinePoints.map { location ->
                         LatLng(location.latitude, location.longitude)
                     },
-                    color = Color.Red,
+                    color = Color.Magenta,
                     width = 5f
                 )
             }
@@ -143,50 +144,3 @@ fun MapTypeSelector(
         }
     }
 }
-
-//@Composable
-//actual fun MapsComponent(
-//    routePolylinePoints: List<com.dmribeiro.cmpmapview.model.LocationModel>,
-//    latitude: Double,
-//    longitude: Double
-//) {
-//    val cameraPositionState = rememberCameraPositionState {
-//        position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 12f)
-//    }
-//    GoogleMap(
-//        cameraPositionState = cameraPositionState
-//    ) {
-//        if (routePolylinePoints.isNotEmpty()) {
-//            Polyline(
-//                points = routePolylinePoints.map { latLng ->
-//                    LatLng(latLng.latitude, latLng.longitude)
-//                },
-//                color = Color.Blue,
-//                width = 5f
-//            )
-//        }
-//    }
-//}
-
-//@Composable
-//fun MapTypeSelector(items: List<String>, selectedIndex: Int, onItemSelected: (Int) -> Unit) {
-//    ScrollableTabRow(
-//        selectedTabIndex = selectedIndex,
-//        backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.9f),
-//        contentColor = MaterialTheme.colors.primary,
-//        edgePadding = 0.dp,
-//        modifier = Modifier
-//            .padding(horizontal = 16.dp)
-//            .fillMaxWidth()
-//    ) {
-//        items.forEachIndexed { index, item ->
-//            Tab(
-//                selected = selectedIndex == index,
-//                onClick = { onItemSelected(index) },
-//                text = { Text(item) },
-//                selectedContentColor = MaterialTheme.colors.primary,
-//                unselectedContentColor = Color.Gray,
-//            )
-//        }
-//    }
-//}

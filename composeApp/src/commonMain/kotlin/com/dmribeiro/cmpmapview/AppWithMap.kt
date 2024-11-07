@@ -6,7 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import com.dmribeiro.cmpmapview.model.LocationData
+import com.dmribeiro.cmpmapview.model.LocationModel
 import com.dmribeiro.cmpmapview.services.LocationService
 import kotlinx.coroutines.launch
 
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 fun AppWithMap(locationService: LocationService) {
 
     val coroutineScope = rememberCoroutineScope()
-    val locationState = remember { mutableStateOf<LocationData?>(null) }
+    val locationState = remember { mutableStateOf<LocationModel?>(null) }
     val errorState = remember { mutableStateOf<String?>(null) }
 
     val apiKey = getConfig().mapsApiKey
@@ -39,8 +39,8 @@ fun AppWithMap(locationService: LocationService) {
         locationState.value != null -> {
             val location = locationState.value!!
             MapWithRouteComponent(
-                apiKey = apiKey,
-                initialLocation = location
+                initialLocation = location,
+                useMockData = false
             )
 
         }

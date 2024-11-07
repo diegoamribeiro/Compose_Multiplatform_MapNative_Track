@@ -16,14 +16,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dmribeiro.cmpmapview.model.DirectionsResult
-import com.dmribeiro.cmpmapview.model.LocationData
+import com.dmribeiro.cmpmapview.model.LocationModel
 import com.dmribeiro.cmpmapview.model.Place
 import com.dmribeiro.cmpmapview.network.getRoute
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 
 @Composable
-fun MapWithRouteComponent(apiKey: String, initialLocation: LocationData) {
+fun MapWithRouteComponent(
+    initialLocation: LocationModel,
+    useMockData: Boolean = true
+) {
     var originPlace by remember { mutableStateOf<Place?>(null) }
     var destinationPlace by remember { mutableStateOf<Place?>(null) }
     var transportationMode by remember { mutableStateOf(TransportationMode.DRIVING) }
@@ -51,19 +53,43 @@ fun MapWithRouteComponent(apiKey: String, initialLocation: LocationData) {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = {
-            if (originPlace != null && destinationPlace != null) {
-                coroutineScope.launch {
-                    try {
-                        val result = getRoute(
-                            origin = originPlace!!,
-                            destination = destinationPlace!!,
-                            mode = transportationMode,
-                            apiKey = apiKey
-                        )
-                        routeInfo = result
-                    } catch (e: Exception) {
-                        // Handle errors
+            coroutineScope.launch {
+                try {
+                    if (useMockData) {
+                        // Definir locais de origem e destino mockados
+                        if (originPlace == null) {
+                            originPlace = Place(
+                                name = "Localização Mock de Origem",
+                                address = "Endereço Mock de Origem",
+                                latitude = -12.9575794,
+                                longitude = -38.4543532
+                            )
+                        }
+                        if (destinationPlace == null) {
+                            destinationPlace = Place(
+                                name = "Localização Mock de Destino",
+                                address = "Endereço Mock de Destino",
+                                latitude = -13.0044708,
+                                longitude = -38.4601264
+                            )
+                        }
+                    } else {
+                        // Se não estiver usando dados mockados, verificar se os lugares não são nulos
+                        if (originPlace == null || destinationPlace == null) {
+                            println("Origem e destino devem ser selecionados.")
+                            return@launch
+                        }
                     }
+
+                    val result = getRoute(
+                        origin = originPlace!!,
+                        destination = destinationPlace!!,
+                        mode = transportationMode,
+                        useMockData = useMockData
+                    )
+                    routeInfo = result
+                } catch (e: Exception) {
+                    println("Erro ao obter a rota: ${e.message}")
                 }
             }
         }) {
@@ -75,6 +101,7 @@ fun MapWithRouteComponent(apiKey: String, initialLocation: LocationData) {
                 durationText = it.durationText
             )
         }
+
         MapsComponent(
             routePolylinePoints = routeInfo?.polylinePoints ?: emptyList(),
             latitude = originPlace?.latitude ?: 0.0,

@@ -1,7 +1,7 @@
 package com.dmribeiro.cmpmapview.services
 
-import com.dmribeiro.cmpmapview.model.LocationData
+import com.dmribeiro.cmpmapview.model.LocationModel
 
 interface LocationService {
-    suspend fun getCurrentLocation() : LocationData?
+    suspend fun getCurrentLocation() : LocationModel?
 }

@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface GMSPlaceSpecialDay : NSObject
 
 /** Date for which there may be exceptional hours. */
-@property(nonatomic, copy, readonly) NSDate *date;
+@property(nonatomic, copy, readonly, nullable) NSDate *date;
 
 /** Returns whether or not the day has exceptional hours which can
  * replace the regular hours on certain dates (often holidays). */

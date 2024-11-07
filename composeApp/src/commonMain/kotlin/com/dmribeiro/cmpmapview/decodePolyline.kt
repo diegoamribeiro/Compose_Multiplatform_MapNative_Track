@@ -3,7 +3,7 @@ package com.dmribeiro.cmpmapview
 import com.dmribeiro.cmpmapview.model.LocationModel
 
 fun decodePolyline(encoded: String): List<LocationModel> {
-    val poly = ArrayList<LocationModel>()
+    val polylinePoints = mutableListOf<LocationModel>()
     var index = 0
     val len = encoded.length
     var lat = 0
@@ -32,12 +32,9 @@ fun decodePolyline(encoded: String): List<LocationModel> {
         val dlng = if ((result and 1) != 0) (result shr 1).inv() else (result shr 1)
         lng += dlng
 
-        val point = LocationModel(
-            latitude = lat.toDouble() / 1E5,
-            longitude = lng.toDouble() / 1E5
-        )
-        poly.add(point)
+        val latitude = lat / 1E5
+        val longitude = lng / 1E5
+        polylinePoints.add(LocationModel(latitude, longitude))
     }
-
-    return poly
+    return polylinePoints
 }

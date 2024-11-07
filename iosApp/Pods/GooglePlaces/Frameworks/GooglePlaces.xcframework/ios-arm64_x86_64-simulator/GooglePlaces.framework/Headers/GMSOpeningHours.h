@@ -9,7 +9,6 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "GMSPlaceSpecialDay.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -103,20 +102,9 @@ typedef NS_ENUM(NSUInteger, GMSDayOfWeek) {
 /** Day of week the associated with the event. */
 @property(nonatomic, readonly, assign) GMSDayOfWeek day;
 
-/** The representation of time of the event in 24hr clock. 0000 */
+/** The representation of time of the event in 24hr clock. */
 @property(nonatomic, readonly, strong) GMSTime *time;
 
-/** The date of the event. */
-@property(nullable, nonatomic, readonly, strong) NSDate *date;
-
-/**
- * Boolean value indicating whether or not the opening or close details were truncated due to the
- * seven day window, where the window starts at midnight of the day of the request, and ends at
- * 11:59 pm six days later.
- *
- * Returns true if the open or close times for this period extends past this seven day window.
- */
-@property(nonatomic, readonly) BOOL truncated;
 @end
 
 /**

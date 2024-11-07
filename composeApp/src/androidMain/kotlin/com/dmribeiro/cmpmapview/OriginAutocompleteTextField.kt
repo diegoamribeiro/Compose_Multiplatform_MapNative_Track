@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.dmribeiro.cmpmapview.model.Place
 import com.dmribeiro.currencyapp.BuildConfig
 import com.google.android.libraries.places.api.Places
@@ -74,7 +76,10 @@ fun AutocompleteTextField(onPlaceSelected: (Place) -> Unit, hint: String) {
                     predictions = emptyList()
                 }
             },
-            label = { Text(hint) },
+            label = {
+                Text( modifier = Modifier.padding(vertical = 4.dp),
+                text = hint
+            ) },
             modifier = Modifier.fillMaxWidth()
         )
 

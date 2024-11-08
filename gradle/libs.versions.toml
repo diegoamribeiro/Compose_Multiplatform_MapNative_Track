@@ -1,4 +1,5 @@
 [versions]
+activityCompose = "1.7.2"
 agp = "8.5.2"
 android-compileSdk = "35"
 android-minSdk = "24"
@@ -13,13 +14,20 @@ androidx-lifecycle = "2.8.3"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.7.0"
+fontAwesome = "1.0.0"
+foundation = "1.7.0"
+imageLoader = "1.2.10"
 junit = "4.13.2"
 kotlin = "2.0.21"
 kotlinxCoroutinesCore = "1.7.1-native-mt"
+kotlinxCoroutinesCoreNative = "1.6.4"
+kotlinxCoroutinesCoreNativeVersion = "1.6.4"
 kotlinxCoroutinesPlayServices = "1.7.3"
 ktor = "2.3.12"
 ktorClientJson = "2.3.1"
+lifecycleRuntimeKtx = "2.8.7"
 mapsCompose = "6.1.0"
+material3 = "1.6.11"
 places = "4.0.0"
 pods-google-maps = "8.4.0"
 pods-google-ios-maps-utils = "5.0.0"
@@ -31,12 +39,19 @@ kotlinxCoroutinesAndroid = "1.8.1"
 playServicesPlaces = "17.1.0"
 playServicesTasks = "18.2.0"
 napierVersion = "2.7.1"
+composeIcons = "1.0.0"
+ui = "1.7.0"
+lifecycleCommonJvm = "2.8.7"
 
 
 
 
 [libraries]
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+composeIcons-feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "composeIcons" }
+foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "foundation" }
+image-loader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "imageLoader" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -49,7 +64,9 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotlinx-coroutines-core-native = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-native", version.ref = "kotlinxCoroutinesCoreNativeVersion" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
@@ -67,6 +84,8 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 napier-logger = { module = "io.github.aakira:napier", version.ref = "napierVersion" }
 ktor-client-ios = { group = "io.ktor", name = "ktor-client-ios", version.ref = "ktor" }
+ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "ui" }
+androidx-lifecycle-common-jvm = { group = "androidx.lifecycle", name = "lifecycle-common-jvm", version.ref = "lifecycleCommonJvm" }
 
 
 

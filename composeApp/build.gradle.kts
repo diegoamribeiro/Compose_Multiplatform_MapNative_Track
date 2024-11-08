@@ -82,6 +82,10 @@ kotlin {
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.napier.logger)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.image.loader)
+                implementation(libs.ui)
+                implementation(libs.material3)
+                implementation(libs.foundation)
             }
         }
 
@@ -103,7 +107,6 @@ kotlin {
             implementation(libs.ktor.client.darwin)
             implementation(libs.kotlinx.coroutines.core)
         }
-
     }
 }
 
@@ -117,7 +120,7 @@ tasks.register("generateBuildKonfig") {
     doLast {
         outputDir.mkdirs()
         outputFile.writeText("""
-            package com.seu.pacote
+            package com.dmribeiro.cmpmapview
 
             object BuildKonfig {
                 const val MAPS_API_KEY = "$mapsApiKey"
@@ -180,5 +183,11 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.tasks)
     debugImplementation(compose.uiTooling)
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 

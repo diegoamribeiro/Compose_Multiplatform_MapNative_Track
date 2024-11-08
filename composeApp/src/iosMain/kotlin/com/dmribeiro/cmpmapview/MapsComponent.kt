@@ -19,20 +19,18 @@ import cocoapods.GoogleMaps.kGMSTypeNormal
 import cocoapods.GoogleMaps.kGMSTypeSatellite
 import cocoapods.GoogleMaps.kGMSTypeTerrain
 import com.dmribeiro.cmpmapview.model.LocationModel
-import kotlinx.cinterop.BetaInteropApi
-import kotlinx.cinterop.CPointed
+import com.dmribeiro.cmpmapview.services.LocationService
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCAction
 import kotlinx.cinterop.StableRef
-import kotlinx.cinterop.interpretCPointer
-import kotlinx.cinterop.objcPtr
-import kotlinx.cinterop.useContents
-import platform.CoreGraphics.CGRectMake
 import platform.CoreLocation.CLLocationCoordinate2DMake
+import platform.Foundation.NSAttributedString
 import platform.Foundation.NSSelectorFromString
-import platform.UIKit.NSLayoutConstraint
+import platform.UIKit.UIBarMetrics
 import platform.UIKit.UIColor
 import platform.UIKit.UIControlEventValueChanged
+import platform.UIKit.UIControlState
+import platform.UIKit.UIImage
 import platform.UIKit.UIScreen
 import platform.UIKit.UISegmentedControl
 import platform.UIKit.systemBlueColor
@@ -46,7 +44,8 @@ import platform.objc.objc_setAssociatedObject
 actual fun MapsComponent(
     routePolylinePoints: List<LocationModel>,
     latitude: Double,
-    longitude: Double
+    longitude: Double,
+    locationService: LocationService
 ) {
     val lastLocation = remember { mutableStateOf<Pair<Double, Double>?>(null) }
 
@@ -66,7 +65,6 @@ actual fun MapsComponent(
                 compassButton = true
                 myLocationButton = true
                 indoorPicker = true
-                setAllGesturesEnabled(true)
             }
 
             // Habilitando a camada de localização e mapas internos
@@ -85,22 +83,51 @@ actual fun MapsComponent(
             // Criação de um delegate para mudar o tipo de mapa
             val mapViewDelegate = MapViewDelegate(mapView)
             val delegatePtr = StableRef.create(mapViewDelegate).asCPointer()
-            val key = delegatePtr
 
             objc_setAssociatedObject(
                 mapView,
-                key,
+                delegatePtr,
                 mapViewDelegate,
                 OBJC_ASSOCIATION_RETAIN_NONATOMIC
             )
 
             // Controle para seleção do tipo de mapa
-            val mapTypeControl = UISegmentedControl(items = listOf<Any>("Normal", "Satellite", "Terrain", "Hybrid")).apply {
+            val mapTypeControl = UISegmentedControl(
+                items = listOf<Any>(
+                    "Normal",
+                    "Satellite",
+                    "Terrain",
+                    "Hybrid"
+                )
+            ).apply {
                 selectedSegmentIndex = 0 // Tipo Normal por padrão
 
                 // Definindo posição do controle no layout
                 translatesAutoresizingMaskIntoConstraints = false
-                tintColor = UIColor.systemBlueColor
+
+                // Configurando cores
+                backgroundColor = UIColor.whiteColor.colorWithAlphaComponent(0.9) // Fundo quase opaco
+                selectedSegmentTintColor = UIColor.lightGrayColor // Cor de seleção
+
+                layer.borderColor = UIColor.whiteColor.colorWithAlphaComponent(0.7).CGColor()
+                layer.borderWidth = 1.0
+                layer.cornerRadius = 5.0
+                clipsToBounds = true
+
+                // Remover efeito de transparência nos segmentos não selecionados
+                setBackgroundImage(
+                    UIImage(),
+                    forState = UIControlState.MAX_VALUE,
+                    barMetrics = UIBarMetrics.MAX_VALUE
+                )
+                setBackgroundImage(
+                    UIImage(),
+                    forState = UIControlState.MAX_VALUE,
+                    barMetrics = UIBarMetrics.MAX_VALUE
+                )
+
+                // Definir altura mínima
+                heightAnchor.constraintEqualToConstant(32.0).active = true
 
                 // Configurando target-action
                 addTarget(
@@ -150,10 +177,10 @@ actual fun MapsComponent(
                 }
                 marker.map = view
             } else {
-                // If the location hasn't changed, we might want to clear previous polylines
+                // Se a localização não mudou, podemos querer limpar polylines anteriores
                 view.clear()
 
-                // Reposition the current marker
+                // Reposicionar o marcador atual
                 val currentCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
                 val marker = GMSMarker().apply {
                     position = currentCoordinates
@@ -163,7 +190,7 @@ actual fun MapsComponent(
                 marker.map = view
             }
 
-            // Drawing or redrawing the Polyline on the map
+            // Desenhando ou redesenhando a Polyline no mapa
             if (routePolylinePoints.isNotEmpty()) {
                 println("***Desenhando Polyline no iOS com ${routePolylinePoints.size} pontos")
                 val path = GMSMutablePath().apply {
@@ -179,15 +206,15 @@ actual fun MapsComponent(
                     map = view
                 }
 
-                // Adjust the camera to fit the polyline
+                // Ajustar a câmera para enquadrar a polyline
                 var bounds: GMSCoordinateBounds? = null
                 routePolylinePoints.forEach { point ->
                     val coordinate = CLLocationCoordinate2DMake(point.latitude, point.longitude)
                     bounds = if (bounds == null) {
-                        // Initialize bounds with the first coordinate
+                        // Inicializar bounds com a primeira coordenada
                         GMSCoordinateBounds(coordinate, coordinate)
                     } else {
-                        // Expand bounds to include the new coordinate
+                        // Expandir bounds para incluir a nova coordenada
                         bounds!!.includingCoordinate(coordinate)
                     }
                 }
@@ -202,7 +229,8 @@ actual fun MapsComponent(
 }
 
 // Delegate para gerenciar o tipo de mapa
-class MapViewDelegate @OptIn(ExperimentalForeignApi::class) constructor(private val mapView: GMSMapView) : NSObject() {
+class MapViewDelegate @OptIn(ExperimentalForeignApi::class) constructor(private val mapView: GMSMapView) :
+    NSObject() {
     @OptIn(ExperimentalForeignApi::class)
     @ObjCAction
     fun mapTypeChanged(sender: UISegmentedControl) {

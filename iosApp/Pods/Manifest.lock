@@ -10,19 +10,20 @@ PODS:
   - GoogleMaps/Base (9.1.0)
   - GoogleMaps/Maps (9.1.0):
     - GoogleMaps/Base
-  - GooglePlaces (8.2.0)
+  - GooglePlaces (9.1.0)
 
 DEPENDENCIES:
   - composeApp (from `../composeApp`)
   - Google-Maps-iOS-Utils (= 6.0.0)
   - GoogleMaps (= 9.1.0)
-  - GooglePlaces (= 8.2.0)
+  - GooglePlaces (= 9.1.0)
 
 SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - GooglePlaces
   trunk:
     - Google-Maps-iOS-Utils
     - GoogleMaps
-    - GooglePlaces
 
 EXTERNAL SOURCES:
   composeApp:
@@ -32,8 +33,8 @@ SPEC CHECKSUMS:
   composeApp: 62b212701431edec77f1b1d34dde2cf7ff2754a2
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: c74e02e00db0be27b165516bde753826e2652b9c
-  GooglePlaces: b3003ef492e6b60d6cb8aa24026935dac2a3b658
+  GooglePlaces: 00c43ad62c888354fe0bc5ce09181b2f6ce8b6d1
 
-PODFILE CHECKSUM: 9343dcdbe304e0c6d63a3cdc415a0e4320d19a87
+PODFILE CHECKSUM: e7ce5669c402630364fabfac602839fa74518ea0
 
 COCOAPODS: 1.15.2

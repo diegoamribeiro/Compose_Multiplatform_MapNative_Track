@@ -1,25 +1,56 @@
 package com.dmribeiro.cmpmapview
 
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.maps.android.compose.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import cmpmapnative.composeapp.generated.resources.Res
+import cmpmapnative.composeapp.generated.resources.gps_fixed_24dp_2854C5
 import com.dmribeiro.cmpmapview.model.LocationModel
+import com.dmribeiro.cmpmapview.services.LocationService
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
 actual fun MapsComponent(
     routePolylinePoints: List<LocationModel>,
     latitude: Double,
-    longitude: Double
+    longitude: Double,
+    locationService: LocationService
 ) {
     val mapTypes = listOf("Normal", "Satellite", "Terrain", "Hybrid")
     val mapTypeValues = listOf(
@@ -30,8 +61,7 @@ actual fun MapsComponent(
     )
     var selectedMapType by remember { mutableIntStateOf(0) } // Default to Normal map type
 
-
-    // Map properties and UI settings
+    // Mantenha as propriedades do mapa e as configurações de UI
     val mapProperties = remember {
         mutableStateOf(
             MapProperties(
@@ -47,7 +77,7 @@ actual fun MapsComponent(
         mutableStateOf(
             MapUiSettings(
                 compassEnabled = true,
-                myLocationButtonEnabled = true,
+                myLocationButtonEnabled = false, // Desabilita o botão padrão
                 indoorLevelPickerEnabled = true,
                 mapToolbarEnabled = true,
                 zoomControlsEnabled = true,
@@ -59,22 +89,38 @@ actual fun MapsComponent(
         )
     }
 
+    // Defina um coroutineScope
+    val coroutineScope = rememberCoroutineScope()
+
+    // Estado para CameraPositionState
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 15f)
+    }
+
+    // Estado para MarkerState
+    val markerState = rememberMarkerState(position = LatLng(latitude, longitude))
+
+    // Atualizar a posição da câmera e do marcador quando a localização muda
+    LaunchedEffect(latitude, longitude) {
+        val newPosition = LatLng(latitude, longitude)
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(newPosition, 15f)
+        markerState.position = newPosition
+    }
+
+    // Ajustar o zoom dinamicamente quando a polyline muda
+    LaunchedEffect(routePolylinePoints) {
+        if (routePolylinePoints.isNotEmpty()) {
+            val routePoints = routePolylinePoints.map { LatLng(it.latitude, it.longitude) }
+            val bounds = calculateBounds(routePoints)
+            // Atualizar a câmera para enquadrar os limites da polyline
+            cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 100)) // 100 é o padding em pixels
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
         Napier.d("***MapsComponent: $latitude: $longitude")
-
-        val coordinates = LatLng(latitude, longitude)
-        val markerState = rememberMarkerState(position = coordinates)
-        val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(coordinates, 15f)
-        }
-
-        LaunchedEffect(latitude, longitude) {
-            val newPosition = LatLng(latitude, longitude)
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(newPosition, 15f)
-            markerState.position = newPosition
-        }
 
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -98,10 +144,10 @@ actual fun MapsComponent(
             )
         }
 
+        // Seletor de Tipo de Mapa no Top Center
         Column(
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 16.dp),
+                .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MapTypeSelector(
@@ -113,6 +159,38 @@ actual fun MapsComponent(
                         mapType = mapTypeValues[selectedMapType]
                     )
                 }
+            )
+        }
+
+        IconButton(
+            onClick = {
+                coroutineScope.launch {
+                    try {
+                        val location = locationService.getCurrentLocation()
+                        if (location != null) {
+                            val newLatLng = LatLng(location.latitude, location.longitude)
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    newLatLng,
+                                    15f
+                                )
+                            )
+                            markerState.position = newLatLng
+                            showToast("Localização atualizada!")
+                        }
+                    } catch (e: Exception) {
+                        showToast("Erro ao obter localização: ${e.message}")
+                    }
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.BottomStart) // Posiciona no canto inferior esquerdo
+                .padding(start = 16.dp, bottom = 16.dp) // Ajusta o padding conforme necessário
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.gps_fixed_24dp_2854C5),
+                contentDescription = "My Location",
+                tint = Color.Blue
             )
         }
     }
@@ -143,4 +221,15 @@ fun MapTypeSelector(
             )
         }
     }
+}
+
+/**
+ * Função para calcular os limites que englobam todos os pontos da polyline.
+ */
+fun calculateBounds(routePoints: List<LatLng>): LatLngBounds {
+    val builder = LatLngBounds.builder()
+    routePoints.forEach { point ->
+        builder.include(point)
+    }
+    return builder.build()
 }

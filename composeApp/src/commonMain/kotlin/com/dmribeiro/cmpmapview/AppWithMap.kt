@@ -17,8 +17,6 @@ fun AppWithMap(locationService: LocationService) {
     val locationState = remember { mutableStateOf<LocationModel?>(null) }
     val errorState = remember { mutableStateOf<String?>(null) }
 
-    val apiKey = getConfig().mapsApiKey
-
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             try {
@@ -40,7 +38,8 @@ fun AppWithMap(locationService: LocationService) {
             val location = locationState.value!!
             MapWithRouteComponent(
                 initialLocation = location,
-                useMockData = false
+                useMockData = false,
+                locationService = locationService
             )
 
         }

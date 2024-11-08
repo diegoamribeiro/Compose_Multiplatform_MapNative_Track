@@ -11,6 +11,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+
 #import "GMSPlacesDeprecationUtils.h"
 
 @protocol GMSPlaceLocationBias;
@@ -81,7 +82,10 @@ typedef NS_ENUM(NSInteger, GMSPlacesAutocompleteTypeFilter) {
  * The filter applied to an autocomplete request to restrict results using up to 5 different place
  * types.
  *
- * NOTE: This API can take an array of up to 5 entries from <a
+ * NOTE: This API can take an array of up to 5 entries.
+ * If you are using GMSAutocompleteRequest, this API can take types from <a
+ * href="https://developers.google.com/maps/documentation/places/ios-sdk/place-types">table_A</a>.
+ * Otherwise, take data from <a
  * href="https://developers.google.com/maps/documentation/places/ios-sdk/supported_types#table1">table_1</a>
  * or <a
  * href="https://developers.google.com/maps/documentation/places/ios-sdk/supported_types#table2">table_2</a>,
@@ -118,9 +122,18 @@ typedef NS_ENUM(NSInteger, GMSPlacesAutocompleteTypeFilter) {
 /** The optional location bias to prefer place results near the location. */
 @property(nonatomic, nullable) id<GMSPlaceLocationBias> locationBias;
 
-/** The optional location restriction to limit the place results to. */
+/** The optional location restriction to limit place results. */
 @property(nonatomic, nullable) id<GMSPlaceLocationRestriction> locationRestriction;
 
+/**
+ * regionCode affects address formatting, result ranking, and potentially hiding or showing certain
+ * results.
+ */
+@property(nonatomic, nullable) NSString *regionCode;
+
+/** inputOffset is the character offset of the input that indicates where the
+ * completions may start from. */
+@property(nonatomic) int32_t inputOffset;
 @end
 
 NS_ASSUME_NONNULL_END

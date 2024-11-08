@@ -5,8 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dmribeiro.cmpmapview.services.AndroidLocationService
@@ -30,6 +29,7 @@ class MainActivity : ComponentActivity() {
                 AppWithMap(locationService = locationService)
             }
         }
+        LocalContext
     }
 
     private fun checkLocationPermissions(onPermissionGranted: () -> Unit) {
@@ -69,10 +69,4 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val REQUEST_LOCATION_PERMISSIONS = 1001
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App(latitude = 37.7749, longitude = -122.4194)
 }

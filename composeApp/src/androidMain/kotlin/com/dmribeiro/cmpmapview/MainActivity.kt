@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dmribeiro.cmpmapview.services.AndroidLocationService
+import com.dmribeiro.cmpmapview.ui.AppWithMap
 import com.dmribeiro.currencyapp.BuildConfig
 import com.google.android.libraries.places.api.Places
 

@@ -12,7 +12,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-// Carregar a chave de API do local.properties
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {

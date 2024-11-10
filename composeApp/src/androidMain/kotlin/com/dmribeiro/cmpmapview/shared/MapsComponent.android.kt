@@ -59,7 +59,7 @@ actual fun MapsComponent(
         MapType.TERRAIN,
         MapType.HYBRID
     )
-    var selectedMapType by remember { mutableIntStateOf(0) } // Default to Normal map type
+    var selectedMapType by remember { mutableIntStateOf(0) }
 
     // Mantenha as propriedades do mapa e as configurações de UI
     val mapProperties = remember {

@@ -3,5 +3,5 @@
 /build/
 /shared/build/generated/
 Configuration/Config.xcconfig
-local.properties
+/local.properties
 UserInterfaceState.xcuserstate

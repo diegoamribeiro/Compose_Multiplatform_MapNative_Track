@@ -2,6 +2,6 @@
 /.gradle/
 /build/
 /shared/build/generated/
+local.properties
 Configuration/Config.xcconfig
-/local.properties
 UserInterfaceState.xcuserstate

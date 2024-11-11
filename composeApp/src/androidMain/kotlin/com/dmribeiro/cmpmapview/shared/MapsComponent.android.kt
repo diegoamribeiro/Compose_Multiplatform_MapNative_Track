@@ -1,13 +1,17 @@
 package com.dmribeiro.cmpmapview.shared
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Tab
@@ -52,7 +56,7 @@ actual fun MapsComponent(
     longitude: Double,
     locationService: LocationService
 ) {
-    val mapTypes = listOf("Normal", "Satellite", "Terrain", "Hybrid")
+    val mapTypeNames = listOf("Normal", "Satellite", "Terrain", "Hybrid")
     val mapTypeValues = listOf(
         MapType.NORMAL,
         MapType.SATELLITE,
@@ -61,7 +65,6 @@ actual fun MapsComponent(
     )
     var selectedMapType by remember { mutableIntStateOf(0) }
 
-    // Mantenha as propriedades do mapa e as configurações de UI
     val mapProperties = remember {
         mutableStateOf(
             MapProperties(
@@ -73,11 +76,12 @@ actual fun MapsComponent(
             )
         )
     }
+
     val uiSettings = remember {
         mutableStateOf(
             MapUiSettings(
                 compassEnabled = true,
-                myLocationButtonEnabled = false, // Desabilita o botão padrão
+                myLocationButtonEnabled = false,
                 indoorLevelPickerEnabled = true,
                 mapToolbarEnabled = true,
                 zoomControlsEnabled = true,
@@ -89,25 +93,22 @@ actual fun MapsComponent(
         )
     }
 
-    // Defina um coroutineScope
     val coroutineScope = rememberCoroutineScope()
 
-    // Estado para CameraPositionState
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 15f)
     }
 
-    // Estado para MarkerState
     val markerState = rememberMarkerState(position = LatLng(latitude, longitude))
 
-    // Atualizar a posição da câmera e do marcador quando a localização muda
+    // Atualiza a posição da câmera e do marcador quando a localização muda
     LaunchedEffect(latitude, longitude) {
         val newPosition = LatLng(latitude, longitude)
         cameraPositionState.position = CameraPosition.fromLatLngZoom(newPosition, 15f)
         markerState.position = newPosition
     }
 
-    // Ajustar o zoom dinamicamente quando a polyline muda
+    // Ajusta o zoom dinamicamente quando a polyline muda
     LaunchedEffect(routePolylinePoints) {
         if (routePolylinePoints.isNotEmpty()) {
             val routePoints = routePolylinePoints.map { LatLng(it.latitude, it.longitude) }
@@ -144,14 +145,13 @@ actual fun MapsComponent(
             )
         }
 
-        // Seletor de Tipo de Mapa no Top Center
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MapTypeSelector(
-                items = mapTypes,
+                items = mapTypeNames,
                 selectedIndex = selectedMapType,
                 onItemSelected = { index ->
                     selectedMapType = index
@@ -162,37 +162,46 @@ actual fun MapsComponent(
             )
         }
 
-        IconButton(
-            onClick = {
-                coroutineScope.launch {
-                    try {
-                        val location = locationService.getCurrentLocation()
-                        if (location != null) {
-                            val newLatLng = LatLng(location.latitude, location.longitude)
-                            cameraPositionState.animate(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    newLatLng,
-                                    15f
+        Card(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp, bottom = 24.dp),
+            shape = RoundedCornerShape(25.dp),
+            elevation = CardDefaults.cardElevation(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White,
+            )
+        ) {
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {
+                        try {
+                            val location = locationService.getCurrentLocation()
+                            if (location != null) {
+                                val newLatLng = LatLng(location.latitude, location.longitude)
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        newLatLng,
+                                        15f
+                                    )
                                 )
-                            )
-                            markerState.position = newLatLng
-                            println("Atualizando a localização atual: $location")
+                                markerState.position = newLatLng
+                                println("Atualizando a localização atual: $location")
+                            }
+                        } catch (e: Exception) {
+                            println("Erro ao obter a localização atual: ${e.message}")
                         }
-                    } catch (e: Exception) {
-                        println("Erro ao obter a localização atual: ${e.message}")
                     }
                 }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomStart) // Posiciona no canto inferior esquerdo
-                .padding(start = 16.dp, bottom = 16.dp) // Ajusta o padding conforme necessário
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.gps_fixed_24dp_2854C5),
-                contentDescription = "My Location",
-                tint = Color.Blue
-            )
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.gps_fixed_24dp_2854C5),
+                    tint = Color.DarkGray,
+                    contentDescription = "My Location",
+                )
+            }
         }
+
     }
 }
 

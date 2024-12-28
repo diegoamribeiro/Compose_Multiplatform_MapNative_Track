@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">My awesome app</string>
+    <string name="title">Some title</string>
+
+    <string name="text_origin">Origin</string>
+    <string name="text_destination">Destination</string>
+</resources>

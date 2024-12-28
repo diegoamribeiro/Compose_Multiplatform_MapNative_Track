@@ -40,6 +40,7 @@ playServicesPlaces = "17.1.0"
 playServicesTasks = "18.2.0"
 napierVersion = "2.7.1"
 composeIcons = "1.0.0"
+resourcesCompose = "0.24.4"
 ui = "1.7.0"
 lifecycleCommonJvm = "2.8.7"
 

@@ -49,12 +49,11 @@ actual fun MapsComponent(
 
     UIKitView(
         factory = {
-            // Definindo coordenadas iniciais e configurando a câmera
+
             val initialCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
             val camera = GMSCameraPosition.cameraWithTarget(initialCoordinates, zoom = 15.0f)
             val mapView = GMSMapView(frame = UIScreen.mainScreen.bounds, camera = camera)
 
-            // Configurando controles e interações do mapa
             mapView.settings.apply {
                 scrollGestures = true
                 zoomGestures = true
@@ -65,12 +64,10 @@ actual fun MapsComponent(
                 indoorPicker = true
             }
 
-            // Habilitando a camada de localização e mapas internos
             mapView.myLocationEnabled = true
             mapView.trafficEnabled = false
             mapView.indoorEnabled = true
 
-            // Adicionando um marcador inicial na posição atual
             val marker = GMSMarker().apply {
                 position = initialCoordinates
                 title = "Current Location"
@@ -78,7 +75,6 @@ actual fun MapsComponent(
             }
             marker.map = mapView
 
-            // Criação de um delegate para mudar o tipo de mapa
             val mapViewDelegate = MapViewDelegate(mapView)
             val delegatePtr = StableRef.create(mapViewDelegate).asCPointer()
 
@@ -89,7 +85,6 @@ actual fun MapsComponent(
                 OBJC_ASSOCIATION_RETAIN_NONATOMIC
             )
 
-            // Controle para seleção do tipo de mapa
             val mapTypeControl = UISegmentedControl(
                 items = listOf<Any>(
                     "Normal",
@@ -98,12 +93,10 @@ actual fun MapsComponent(
                     "Hybrid"
                 )
             ).apply {
-                selectedSegmentIndex = 0 // Tipo Normal por padrão
+                selectedSegmentIndex = 0
 
-                // Definindo posição do controle no layout
                 translatesAutoresizingMaskIntoConstraints = false
 
-                // Configurando cores
                 backgroundColor = UIColor.whiteColor.colorWithAlphaComponent(0.9) // Fundo quase opaco
                 selectedSegmentTintColor = UIColor.lightGrayColor // Cor de seleção
 
@@ -112,7 +105,6 @@ actual fun MapsComponent(
                 layer.cornerRadius = 5.0
                 clipsToBounds = true
 
-                // Remover efeito de transparência nos segmentos não selecionados
                 setBackgroundImage(
                     UIImage(),
                     forState = UIControlState.MAX_VALUE,
@@ -135,10 +127,8 @@ actual fun MapsComponent(
                 )
             }
 
-            // Adicionando o controle ao mapa
             mapView.addSubview(mapTypeControl)
 
-            // Configurando restrições de layout
             mapTypeControl.leadingAnchor.constraintEqualToAnchor(
                 anchor = mapView.leadingAnchor,
                 constant = 16.0
@@ -157,7 +147,6 @@ actual fun MapsComponent(
             mapView
         },
         update = { view ->
-            // Update the camera position and markers when the location changes
             if (lastLocation.value != Pair(latitude, longitude)) {
                 lastLocation.value = Pair(latitude, longitude)
 
@@ -175,10 +164,8 @@ actual fun MapsComponent(
                 }
                 marker.map = view
             } else {
-                // Se a localização não mudou, podemos querer limpar polylines anteriores
                 view.clear()
 
-                // Reposicionar o marcador atual
                 val currentCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
                 val marker = GMSMarker().apply {
                     position = currentCoordinates
@@ -188,7 +175,6 @@ actual fun MapsComponent(
                 marker.map = view
             }
 
-            // Desenhando ou redesenhando a Polyline no mapa
             if (routePolylinePoints.isNotEmpty()) {
                 println("***Desenhando Polyline no iOS com ${routePolylinePoints.size} pontos")
                 val path = GMSMutablePath().apply {
@@ -204,15 +190,12 @@ actual fun MapsComponent(
                     map = view
                 }
 
-                // Ajustar a câmera para enquadrar a polyline
                 var bounds: GMSCoordinateBounds? = null
                 routePolylinePoints.forEach { point ->
                     val coordinate = CLLocationCoordinate2DMake(point.latitude, point.longitude)
                     bounds = if (bounds == null) {
-                        // Inicializar bounds com a primeira coordenada
                         GMSCoordinateBounds(coordinate, coordinate)
                     } else {
-                        // Expandir bounds para incluir a nova coordenada
                         bounds!!.includingCoordinate(coordinate)
                     }
                 }
@@ -226,7 +209,6 @@ actual fun MapsComponent(
     )
 }
 
-// Delegate para gerenciar o tipo de mapa
 class MapViewDelegate @OptIn(ExperimentalForeignApi::class) constructor(private val mapView: GMSMapView) :
     NSObject() {
     @OptIn(ExperimentalForeignApi::class)

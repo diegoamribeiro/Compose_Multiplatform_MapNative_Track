@@ -128,7 +128,6 @@ tasks.register("generateBuildKonfig") {
     }
 }
 
-// Assegurar que a tarefa de geração seja executada antes de compilar
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {
     dependsOn("generateBuildKonfig")
 }
@@ -166,7 +165,6 @@ android {
     }
 
     defaultConfig {
-        // Outras configurações
         val configProps = Properties().apply {
             load(FileInputStream(rootProject.file("local.properties")))
         }
